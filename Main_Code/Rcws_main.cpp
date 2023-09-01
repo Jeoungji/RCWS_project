@@ -29,20 +29,19 @@ void imageTread(
     UDPSocket_Image& Socket, cv::VideoCapture& cap)
 {
     cv::Mat image;
-    float num = 0;
 
     while (isConnectedServer) {
 
-        rcws.SetDistance(num);
-        num = num + 10;
-        if (num > 30000) num = 0;
-
+        
+        
         auto start = std::chrono::steady_clock::now();
         try
         {
             cap.read(image);
             if (image.empty()) continue;
+            int num = rcws.GetDistance();
             int d = rcws.distancePoint();
+            std::cout << d << std::endl;
             //std::cout << "cols " << image.cols << "  rows : " << image.rows << std::endl;
             cv::line(image, cv::Point(WIDTH / 2, 0), cv::Point(WIDTH / 2, HEIGHT), cv::Scalar(255, 255, 255));
             cv::circle(image, cv::Point(d, HEIGHT / 2), 5, cv::Scalar(0, 0, 255), -1, cv::LINE_AA);
@@ -58,7 +57,8 @@ void imageTread(
         }
         auto finish = std::chrono::steady_clock::now();
         std::chrono::duration<double> duration = finish - start;
-        std::cout << "Image Sending Time in seconds : " << duration.count() << std::endl;
+        //std::cout << "Image Sending Time in seconds : " << duration.count() << std::endl;
+        cv::waitKey(100);
     }
 }
 
@@ -74,6 +74,7 @@ void Commu(
         try {
             TcpRecvCommand recv;
             com.Recv(recv);
+            std::cout << recv.Pan << std::endl;
             tcpRecvcom.push(recv);
         }
         catch (std::exception& e) {
@@ -97,7 +98,6 @@ void Commu(
         int a = MainMCU.ReadData(localMainrecvcom);
         if (a) {
             MainRecvcom.push(localMainrecvcom);
-            std::cout << "distance : " << localMainrecvcom.Lidardistance << std::endl;
         }
         if (!MainSendcom.empty()) {
             localMainsendcom = MainSendcom.front();
@@ -112,15 +112,15 @@ int main()
     std::cout << "RCWS Operate..." << std::endl;
     isRunning = true;
 
-    Serial MainMCU(21, "Arduino DUE");    // adjust as needed
+    Serial MainMCU(6, "Arduino DUE");    // adjust as needed
 
     if (MainMCU.IsConnected()) {
         std::cout << "[INFO] " << MainMCU.PortName << " Connetcted" << std::endl;
-        if (!MainMCU.Checking(39)) exit(0);
+        if (!MainMCU.Checking(sizeof(MainMCURecvcom))) exit(0);
     }
     else exit(0);
 
-    cv::VideoCapture RGBCamera(0);
+    cv::VideoCapture RGBCamera(1);
     if (!RGBCamera.isOpened()) {
         std::cout << "[ERROR] RGBCamera Open failed" << std::endl;
         isRunning = false;
@@ -130,8 +130,9 @@ int main()
     RGBCamera.set(cv::CAP_PROP_FRAME_WIDTH, WIDTH);
     RGBCamera.set(cv::CAP_PROP_FRAME_HEIGHT, HEIGHT);
 
-    cv::VideoCapture IRCamera(1);
+    cv::VideoCapture IRCamera(2);
     if (!RGBCamera.isOpened()) {
+
         std::cout << "[ERROR] IRCamera Open failed" << std::endl;
         isRunning = false;
         exit(1);
@@ -161,6 +162,20 @@ int main()
         // MainMCU 데이터 수신
         rcws.SetMainMCUcom(MainRecvcom);
 
+        //std::cout << rcws.GetGoalTurretAnglePan() << std::endl;
+        //std::cout << MainRecvcom.front().RealOpticalTilt << " " <<
+        //    MainRecvcom.front() .RealBodyPan << " " <<
+        //    MainRecvcom.front() .RealBodyTilt << " " <<
+        //    MainRecvcom.front() .RealBodyPan << " " <<
+        //    MainRecvcom.front() .IMUTilt << " " <<
+        //    MainRecvcom.front() .IMUPan << " " <<
+        //    MainRecvcom.front() .Lidardistance << " " <<
+        //    MainRecvcom.front() .GunVoltage << " " <<
+        //    (int)MainRecvcom.front() .SentryPermission << " " <<
+        //    (int)MainRecvcom.front() .fire << " " <<
+        //    (int)MainRecvcom.front() .RGBmagnification << " "<<
+        //    (int)MainRecvcom.front() .remaining_bullets << std::endl;
+
         switch (rcws.GetPermission()) {
         case 0: // 0번_기본 상황실 제어
         case 2: // 2번_강제 상황실 제어
@@ -174,8 +189,8 @@ int main()
             std::cout << "[WARNNING] Permmission Error" << std::endl;
         }
 
-        rcws.GetTCPcom(tcpSendcom);
-        rcws.GetMainMCUcom(MainSendcom);
+        //rcws.GetTCPcom(tcpSendcom);
+        //rcws.GetMainMCUcom(MainSendcom);
 
     }
 

@@ -42,6 +42,8 @@ void RCWS::SetTCPcom(std::queue<TcpRecvCommand>& recv) {
 
 	if (Permission != 1) { // Do not update data when sentry permission status
 		FireRequest = recv.front().Fire;
+		GoalTurretAngle[0] = recv.front().Pan;
+
 		TCPOpticalAngle[0] = TurnAngleOptical * recv.front().Pan;
 		TCPOpticalAngle[1] = TurnAngleOptical * recv.front().Tilt;
 		AimRequest = recv.front().TakeAim;
@@ -62,6 +64,14 @@ void RCWS::SetMainMCUcom(std::queue<MainMCURecvcom>& recv) {
 	RealTurretAngle[1] = recv.front().RealBodyTilt;
 	RealOpticalAngle[0] = recv.front().RealOpticalPan;
 	RealOpticalAngle[1] = recv.front().RealOpticalTilt;
+
+
+	distance = (int)recv.front().Lidardistance;
+	FireRequest = recv.front().fire;
+	Gun_voltage = recv.front().GunVoltage;
+	Remaining_bullets = recv.front().remaining_bullets;
+	RealMagnification = recv.front().RGBmagnification;
+	SentryRequest = recv.front().SentryPermission;
 	
 	if (Permission == 1)
 		FireRequest = recv.front().fire;

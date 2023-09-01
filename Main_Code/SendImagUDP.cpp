@@ -30,7 +30,7 @@ TCP::TCP(const unsigned int port)
 
 	bind(sock, (SOCKADDR*)&addr, sizeof(addr));
 
-	DWORD recvTimeout = 20;
+	DWORD recvTimeout = 1;
 	setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char*)&recvTimeout, sizeof(recvTimeout));
 	listen(sock, 2);
 	std::cout << "[INFO] Listenning..." << std::endl;

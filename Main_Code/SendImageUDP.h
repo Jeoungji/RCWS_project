@@ -35,7 +35,7 @@ private:
 	//std::vector<char> Sbuf;
 	//std::vector<char> Rbuf;
 
-    char buf[24];
+    char buf[30];
 public:
     TCP(const unsigned int port);
 	TCP(const std::string& server_ip, const unsigned int port);

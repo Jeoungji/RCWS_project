@@ -56,6 +56,8 @@ private:
 	bool RealAim = false;
 	bool RealFire = false;
 	unsigned char RealMagnification;
+	float Gun_voltage;
+	int Remaining_bullets;
 	// flag
 	bool isRunning = false;
 	bool isdatatcp = false;
@@ -74,7 +76,7 @@ public:
 
 	void GetTCPcom(std::queue<TcpSendCommand>& send);
 	void GetMainMCUcom(std::queue<MainMCUSendcom>& send);
-
+	float GetGoalTurretAnglePan() { return GoalTurretAngle[0]; }
 
 public:
 	void SetTCPcom(std::queue<TcpRecvCommand> &recv);

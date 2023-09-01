@@ -10,8 +10,8 @@
 #define HEIGHT 720
 #define PORT  9000
 //#define SERVER_IP "192.168.0.2"
-#define SERVER_IP "192.168.0.53"
-//#define SERVER_IP "127.0.0.1"
+//#define SERVER_IP "192.168.0.53"
+#define SERVER_IP "127.0.0.1"
 
 std::queue<cv::Mat> buffer;
 std::mutex mutex;
@@ -34,7 +34,7 @@ void fn(UDPSocket_Image& Socket) {
 			std::cout << e.what();
 		}
 
-		cv::waitKey(20);
+		cv::waitKey(50);
 	}
 }
 
@@ -55,30 +55,34 @@ int main()
 	int count = 0;
 
 	TcpSendCommand recv;
-	TcpRecvCommand send = { 11,12,13,14 };
+	TcpRecvCommand send;
+	send.Pan = 0;
 
 	while (1) {
-		try {
-			sock.Recv(recv);
-			std::cout << "Tilt : " << (int)recv.BodyTilt << "  Pan : " << (int)recv.BodyPan
-				<< "  OpticalTilt : " << (int)recv.OpticalTilt << "  OpticalPan : " << (int)recv.OpticalPan
-				<< "  Permission : " << (int)recv.Permission << "  Pointdistance : " << (int)recv.pointdistance << std::endl;
+		
+		std::cout << "stat1" << std::endl;
+		if (send.Pan > 180) {
+			send.Pan = 0;
+			std::cout << "over 180" << std::endl;
 		}
-		catch (std::exception& e) {
-		}
+		//try {
+		//	sock.Recv(recv);
+		//	
+		//}
+		//catch (std::exception& e) {
+		//	std::cout << e.what() << std::endl;
+		//}
 
 
 		try {
 			sock.Send(send);
-			
+			send.Pan++;
+			std::cout << send.Pan << std::endl;
 		}
 		catch (std::exception& e) {
 			std::cout << e.what() << std::endl;
 		}
-
-		
-
-
+		cv::waitKey(100);
 	}
 	std::cout << std::endl << "Done" << std::endl;
 }
