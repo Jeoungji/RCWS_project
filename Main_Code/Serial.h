@@ -51,14 +51,6 @@ public:
 
     bool WriteData(MainMCUSendcom& data); /*Send Serial data to Send struct type, return true on success*/
 
-    int ReadData(OpticalMCURecvcom& data); /*Read Serial data to recv struct type, return read buffer size*/
-
-    bool WriteData(OpticalMCUSendcom& data); /*Send Serial data to Send struct type, return true on success*/
-
-    int ReadData(GunMCURecvcom& data); /*Read Serial data to recv struct type, return read buffer size*/
-
-    bool WriteData(GunMCUSendcom& data); /*Send Serial data to Send struct type, return true on success*/
-
     bool Checking(int size);
 };
 

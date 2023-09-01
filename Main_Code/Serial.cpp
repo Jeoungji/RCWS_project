@@ -25,7 +25,7 @@ Serial::Serial(unsigned short port, std::string Name) /*COM port number*/
         OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL,
         NULL);
-
+    
     //Check if the connection was successfull
     if (this->hSerial == INVALID_HANDLE_VALUE)
     {
@@ -271,119 +271,7 @@ int Serial::ReadData(MainMCURecvcom& data) {
     return 0;
 }
 
-int Serial::ReadData(OpticalMCURecvcom& data) {
-    //Number of bytes we'll have read
-    DWORD bytesRead;
-    //Number of bytes we'll really ask to read
-    unsigned int toRead = 0;
-
-    //Use the ClearCommError function to get status info on the Serial port
-    ClearCommError(this->hSerial, &this->errors, &this->status);
-
-    //Check if there is something to read
-    if (this->status.cbInQue > (sizeof(data) - 1))
-    {
-        //If there is we check if there is enough data to read the required number
-        //of characters, if not we'll read only the available characters to prevent
-        //locking of the application.
-
-        if (this->status.cbInQue > sizeof(data))
-        {
-            toRead = sizeof(data);
-        }
-        else
-        {
-            toRead = this->status.cbInQue;
-        }
-
-        //Try to read the require number of chars, and return the number of read bytes on success
-
-        if (ReadFile(this->hSerial, Rbuffer.data(), sizeof(data), &bytesRead, NULL))
-        {
-            //Decoding
-            memcpy(&data, Rbuffer.data(), sizeof(data));
-            return bytesRead;
-        }
-    }
-    //If nothing has been read, or that an error was detected return 0
-    return 0;
-}
-
-int Serial::ReadData(GunMCURecvcom& data) {
-    //Number of bytes we'll have read
-    DWORD bytesRead;
-    //Number of bytes we'll really ask to read
-    unsigned int toRead = 0;
-
-    //Use the ClearCommError function to get status info on the Serial port
-    ClearCommError(this->hSerial, &this->errors, &this->status);
-
-    //Check if there is something to read
-    if (this->status.cbInQue > (sizeof(data) - 1))
-    {
-        //If there is we check if there is enough data to read the required number
-        //of characters, if not we'll read only the available characters to prevent
-        //locking of the application.
-
-        if (this->status.cbInQue > sizeof(data))
-        {
-            toRead = sizeof(data);
-        }
-        else
-        {
-            toRead = this->status.cbInQue;
-        }
-
-        //Try to read the require number of chars, and return the number of read bytes on success
-
-        if (ReadFile(this->hSerial, Rbuffer.data(), sizeof(data), &bytesRead, NULL))
-        {
-            //Decoding
-            memcpy(&data, Rbuffer.data(), sizeof(data));
-            return bytesRead;
-        }
-    }
-    //If nothing has been read, or that an error was detected return 0
-    return 0;
-}
-
-bool Serial::WriteData(OpticalMCUSendcom& data) {
-    DWORD bytesSend;
-
-    // Encoding
-    memcpy(Sbuffer.data(), &data, sizeof(data));
-
-    //Try to write the buffer on the Serial port
-    if (!WriteFile(this->hSerial, Sbuffer.data(), sizeof(data), &bytesSend, 0))
-    {
-        //In case it don't work get comm error and return false
-        ClearCommError(this->hSerial, &this->errors, &this->status);
-
-        return false;
-    }
-    else
-        return true;
-}
-
 bool Serial::WriteData(MainMCUSendcom& data) {
-    DWORD bytesSend;
-
-    // Encoding
-    memcpy(Sbuffer.data(), &data, sizeof(data));
-
-    //Try to write the buffer on the Serial port
-    if (!WriteFile(this->hSerial, Sbuffer.data(), sizeof(data), &bytesSend, 0))
-    {
-        //In case it don't work get comm error and return false
-        ClearCommError(this->hSerial, &this->errors, &this->status);
-
-        return false;
-    }
-    else
-        return true;
-}
-
-bool Serial::WriteData(GunMCUSendcom& data) {
     DWORD bytesSend;
 
     // Encoding

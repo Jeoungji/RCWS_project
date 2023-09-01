@@ -58,7 +58,7 @@ void imageTread(
         }
         auto finish = std::chrono::steady_clock::now();
         std::chrono::duration<double> duration = finish - start;
-        std::cout << "Socket Time in seconds : " << duration.count() << std::endl;
+        std::cout << "Image Sending Time in seconds : " << duration.count() << std::endl;
     }
 }
 
@@ -97,10 +97,7 @@ void Commu(
         int a = MainMCU.ReadData(localMainrecvcom);
         if (a) {
             MainRecvcom.push(localMainrecvcom);
-            //std::cout.width(6);
-            //std::cout << SP.PortName << " Serial : ";
-            //std::cout << "x: " << recvcom.x << "  y: " << recvcom.y;
-            //std::cout << "  swL" << (int)recvcom.swL << "  swR" << (int)recvcom.swR << "  ";
+            std::cout << "distance : " << localMainrecvcom.Lidardistance << std::endl;
         }
         if (!MainSendcom.empty()) {
             localMainsendcom = MainSendcom.front();
@@ -115,11 +112,11 @@ int main()
     std::cout << "RCWS Operate..." << std::endl;
     isRunning = true;
 
-    Serial MainMCU(6, "Arduino DUE");    // adjust as needed
+    Serial MainMCU(21, "Arduino DUE");    // adjust as needed
 
     if (MainMCU.IsConnected()) {
         std::cout << "[INFO] " << MainMCU.PortName << " Connetcted" << std::endl;
-        if (!MainMCU.Checking(28)) exit(0);
+        if (!MainMCU.Checking(39)) exit(0);
     }
     else exit(0);
 

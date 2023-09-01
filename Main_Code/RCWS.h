@@ -74,13 +74,11 @@ public:
 
 	void GetTCPcom(std::queue<TcpSendCommand>& send);
 	void GetMainMCUcom(std::queue<MainMCUSendcom>& send);
-	void GetOpticalMCUcom(std::queue<OpticalMCUSendcom>& send);
-	void GetGunMCUcom(std::queue<GunMCUSendcom>& send);
+
 
 public:
 	void SetTCPcom(std::queue<TcpRecvCommand> &recv);
 	void SetMainMCUcom(std::queue<MainMCURecvcom>& recv);
-	void SetOpticalMCUcom(std::queue<OpticalMCURecvcom>& recv);
 
 
 	void SetDistance(int dis)  { distance = dis; }
